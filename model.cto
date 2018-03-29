@@ -1,0 +1,78 @@
+/**
+ * New model file
+ */
+
+namespace org.acme.insurance
+
+asset demoTest identified by testId{
+	o String testId
+  	o String name
+}
+
+asset bill identified by billId {
+	o String  		billId
+  	o Double  		cost
+  	o String   		illnessName
+  	o DateTime 		date
+  	--> Patient 	patient
+  	--> Hospital 	hospital
+}
+
+asset insurance identified by insuranceId{
+	o String 			insuranceId
+  	o Double 			coverRate
+  	o String[] 		validHospitalIds
+  	--> InsuranceCompany 	seller
+    --> Patient 			owner 	
+}
+
+
+
+abstract participant InsuranceParticipant identified by participantKey {
+  o String          participantKey
+  o Contact         contact
+  o Double 			Balance
+}
+concept Contact {
+  o String fName
+  o String lname
+  o String email
+  o String phone
+}
+
+participant Patient extends InsuranceParticipant {
+	o String[] ownedInsurance optional
+ 	o String[] bills optional
+}
+
+participant Hospital extends InsuranceParticipant {	}
+
+participant InsuranceCompany extends InsuranceParticipant {}
+
+
+transaction SetupDemo {
+}
+
+transaction Createbill {
+  o   String  	billId
+  o   Double  	cost
+  -->   Patient 	patient
+  -->   Hospital 	hospital
+  o   String   	illnessName
+}
+
+transaction CreateInsurance {
+  o   String  		    	insuranceId
+  o   Double  		    	coverRate
+  o   String[] 		      validHospitalIds
+  o	  Double			      Deposit
+  --> InsuranceCompany 	seller
+  --> Patient 			    owner
+}
+
+transaction Paybill {
+  -->   bill  	    bill
+  -->   Patient 	    patient
+  -->   Hospital 	    hospital
+  -->   insurance     insurance optional
+}
